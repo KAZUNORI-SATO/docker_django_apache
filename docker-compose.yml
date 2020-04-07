@@ -1,0 +1,19 @@
+version: '3'
+
+services: 
+  django-apache2:
+    build: .
+    container_name: django-apache2
+    ports:
+      - '8005:80'
+    volumes: 
+      - ./www:/var/www/html
+    depends_on:
+      - db
+
+  db:
+    image: postgres:11
+    environment:
+        - POSTGRES_USER=django_db_user
+        - POSTGRES_PASSWORD=password1234
+        - POSTGRES_DB=django_db
