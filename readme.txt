@@ -1,6 +1,6 @@
 <<<<<<< HEAD
 
-【１】Webコンテナ（Django + Apache + mod_wsgi）とDBコンテナ（PostgreSQL）の作成と起動までの手順
+【１】デプロイ化Webコンテナ（Django + Apache + mod_wsgi）とDBコンテナ（PostgreSQL）の作成と起動までの手順
 
 ①事前準備
 　1.作業用マシンに以下をインストール
@@ -21,7 +21,7 @@
 　3.GitのリモートリポジトリからPullする
 
 　（リモートリポジトリ）
-　　　https://github.com/KAZUNORI-SATO/docker_django_apache
+　　　https://github.com/dockblow-apawish/docker_django_apache
 
 
 ②ホスト（Windows側）とコンテナで共有するフォルダの設定
@@ -32,33 +32,38 @@
 
 　　　Docker Toolsの場合　：VirtualBox 設定項目の共有フォルダのパス設定を正しくする
 
+       フォルダーのパス：C:\[フルパスでgitディレクトリ名]　フォルダのセパレータは「\」
+　　　 フォルダー名：/c/[フルパスでgitディレクトリ名]　※フォルダのセパレータは「/」
+
 
 ③Dockerの仮想マシン起動
 
 　　　Docker Desktop for Windowsの場合　：Docker for Windowsを起動（MobyLinuxVM）
 
-　　　Docker Toolsの場合　：VirtualBox を起動する
-　　　　　　　　　　　　　　Docker Quickstart Terminal を起動する（VirtualBoxの仮想マシンが起動する）
+　　　Docker Toolsの場合　：VirtualBox を起動する（初回は仮想マシンがなく、Docker Quickstart Terminalの起動で作成される）
+　　　　　　　　　　　　　　Docker Quickstart Terminal を起動する（VirtualBoxの仮想マシンが停止 → 起動になる）
 
 
 ④各状態の確認（これ以降、ホストOSのコマンドプロンプトで実行）
 
-■dockerの仮想マシン情報の表示
+■dockerの仮想マシン情報の表示（以降はDocker Toolsの仮想マシンの環境で実施）
 　docker-machine ls
 
 　NAME      ACTIVE   DRIVER       STATE     URL                         SWARM   DOCKER     ERRORS
 　default   *        virtualbox   Running   tcp://192.168.99.100:2376           v19.03.5
-                                            　　    ★仮想マシンのIPアドレスがわかる
+                                            　    ★仮想マシンのIPアドレスがわかる
 
 ■dockerイメージの一覧を確認（初回は何も表示されない）
 　docker images
 
+　REPOSITORY                            TAG                 IMAGE ID            CREATED             SIZE
 
-⑤カレントディレクトリをDockerfileがあるフォルダ（Gitのワークスペースのフォルダ）にする
+
+⑤Dockerfileがあるフォルダ（Gitのフォルダ）に移動する
 　cd c:\docker_django_apache
 
 
-⑥コンテナをビルドして起動する
+⑥コンテナをビルドして起動する　※マシンスペックに依るが、ビルドに10分程度かかる
 　docker-compose up -d --build
 
 ■dockerイメージの一覧を確認
@@ -70,7 +75,7 @@
 　ubuntu                                latest              4e5021d210f6        2 weeks ago         64.2MB
 
 　　※docker_django_apache_django-apache2は「Django + Apache + mod_wsgi」コンテナのイメージ
-　　※ubuntuは「Django + Apache + mod_wsgi」コンテナの元コンテナのイメージ
+　　※ubuntuは「Django + Apache + mod_wsgi」コンテナの元となるコンテナのイメージ
 
 ■コンテナの一覧を確認
 　docker container ls [-a]　
@@ -91,8 +96,8 @@
 
 
 【２】DjangoのアプリケーションとDB構築手順
-　・WebコンテナにはDjangoの基本アプリである管理 (admin) サイトの環境が配置されており、
-　　DBコンテナにはPostgreSQLのDjango用データベースが作成されている
+　・WebコンテナにはDjangoの基本アプリである管理 (admin) サイトの動作環境を配置しており、
+　　DBコンテナにはPostgreSQLのDjango用データベースを作成している
 
 　　　DB名　　　: django_db
       ユーザー名: django_db_user
@@ -132,7 +137,12 @@
 
 
 　③ブラウザでhttp://192.168.99.101:8005/admin/
-  　の管理 (admin) サイトにアクセスし、②で設定したユーザーとパスワードでログイン可能であることを確認する
+  　の管理 (admin) サイトのログイン画面にアクセスし、②で設定したユーザーとパスワードでログイン可能であることを確認する
+
+　④DjangoとApacheの連携とPostgreSQLの環境が構築されたので、新しいDjangoアプリの開発は
+　　「～\www\django_app\」配下に下記コマンドを実行してPythonファイルを配置して進めるだけとなる
+
+　docker-compose run --rm django-apache2 python3 manage.py startapp [アプリ名]
 
 
 【３】参考
