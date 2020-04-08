@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 【１】Webコンテナ（Django + Apache + mod_wsgi）とDBコンテナ（PostgreSQL）の作成と起動までの手順
 
@@ -197,3 +198,6 @@
 　docker-compose down -v
 
 
+=======
+# docker_django_apache
+>>>>>>> origin/master
